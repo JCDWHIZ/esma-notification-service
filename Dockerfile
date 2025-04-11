@@ -23,11 +23,6 @@ COPY --from=build /app/src ./src
 COPY --from=build /app .
 COPY . .
 COPY src/ .
-# Add any other directories you need
-RUN mv uploads ./src/uploads && mv config ./src/config && mv routes ./src/routes
-
-# You can also move individual files if needed
-RUN mv index.ts ./src/index.ts
 
 EXPOSE 6072
 
