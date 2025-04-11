@@ -22,7 +22,7 @@ WORKDIR /app
 COPY --from=build /app/src ./src
 COPY --from=build /app .
 COPY . .
-COPY src/ .
+COPY src/ ./app/src
 # Add any other directories you need
 
 EXPOSE 6072
