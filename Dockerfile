@@ -8,6 +8,8 @@ RUN npm i
 
 COPY . .
 
+COPY src ./src
+
 RUN npm run swagger
 
 RUN npx tsc
