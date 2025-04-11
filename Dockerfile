@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM node:20-bullseye AS build
+FROM --platform=linux/arm64 node:20-alpine
 
 WORKDIR /app
 
