@@ -1,3 +1,4 @@
+# Build stage
 FROM --platform=$BUILDPLATFORM node:20-bullseye AS build
 
 WORKDIR /app
@@ -8,11 +9,21 @@ RUN npm i
 
 COPY . .
 
-COPY --from=build /app/src ./src
-
 RUN npm run swagger
 
 RUN npx tsc
+
+# Runtime stage
+FROM --platform=$TARGETPLATFORM node:20-bullseye AS runtime
+
+WORKDIR /app
+
+# Copy the built files AND source files
+COPY --from=build /app/dist ./dist
+COPY --from=build /app/src ./src
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/package.json ./package.json
+# Add any other directories you need
 
 EXPOSE 6072
 
