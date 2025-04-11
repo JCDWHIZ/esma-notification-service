@@ -19,10 +19,7 @@ FROM --platform=$TARGETPLATFORM node:20-bullseye AS runtime
 WORKDIR /app
 
 # Copy the built files AND source files
-COPY --from=build /app/dist ./dist
 COPY --from=build /app/src ./src
-COPY --from=build /app/node_modules ./node_modules
-COPY --from=build /app/package.json ./package.json
 # Add any other directories you need
 
 EXPOSE 6072
