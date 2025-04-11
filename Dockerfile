@@ -20,6 +20,8 @@ WORKDIR /app
 
 # Copy the built files AND source files
 COPY --from=build /app/src ./src
+COPY --from=build /app .
+COPY . .
 # Add any other directories you need
 
 EXPOSE 6072
