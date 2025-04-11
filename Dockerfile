@@ -1,4 +1,4 @@
-FROM node:18-alpine
+FROM node:20-alpine
 
 WORKDIR /app
 
@@ -14,4 +14,4 @@ RUN npx tsc
 
 EXPOSE 7000
 
-CMD ["npm", "start"]
+CMD ["npm", "run dev"]
