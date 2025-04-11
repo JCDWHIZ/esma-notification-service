@@ -1,0 +1,28 @@
+version: "3.8"
+
+services:
+  esma-shared-app:
+    image: docker.io/elsofthub/esma-shared:latest
+    container_name: esma-admin
+    restart: always
+    environment:
+      - PORT=6072
+      - DATABASE_URL=${DATABASE_URL}
+      - NODE_ENV=production
+      - CLOUDINARY_API_SECRET=8lH7epf3A6amhrOh5DPlywJM7w4
+      - CLOUDINARY_API_KEY=495564918312834
+      - CLOUDINARY_CLOUD_NAME=ddbtedc49
+      - EMAIL_USER=elsofthub@gmail.com
+      - EMAIL_PASSWORD=elwz vkiy lcoe iusd
+      - FRONTEND_URL=https://localhost:5000
+    volumes:
+      - ./src:/app/src
+      - ./uploads:/app/uploads
+    ports:
+      - "6072:6072"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:6072"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
