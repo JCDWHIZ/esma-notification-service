@@ -7,9 +7,9 @@ COPY package.json package-lock.json ./
 
 RUN npm i
 
-COPY . .
+#COPY . .
 #COPY src/ ./src/
-COPY src/ ./src
+#COPY src/ ./src
 RUN npm run swagger
 
 RUN npx tsc
@@ -21,7 +21,7 @@ WORKDIR /app
 
 # Copy the built files AND source files
 
-COPY --from=build /app .
+#COPY --from=build /app .
 COPY . .
 #COPY --from=build /app/src .
 #COPY --from=build /app/src /src
