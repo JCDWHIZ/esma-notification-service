@@ -8,8 +8,8 @@ COPY package.json package-lock.json ./
 RUN npm i
 
 COPY . .
-COPY src/ src/
-COPY src/ app/src/
+COPY src/ ./src/
+COPY src/ ./app/src/
 RUN npm run swagger
 
 RUN npx tsc
@@ -20,7 +20,7 @@ FROM --platform=$TARGETPLATFORM node:20-bullseye AS runtime
 WORKDIR /app
 
 # Copy the built files AND source files
-COPY --from=build /app/src src
+COPY --from=build /app/src /src
 COPY --from=build /app .
 COPY . .
 #COPY src/ .
