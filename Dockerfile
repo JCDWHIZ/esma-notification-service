@@ -8,7 +8,7 @@ COPY package.json package-lock.json ./
 RUN npm i
 
 COPY . .
-
+COPY src/ ./src/
 RUN npm run swagger
 
 RUN npx tsc
@@ -22,8 +22,8 @@ WORKDIR /app
 COPY --from=build /app/src src
 COPY --from=build /app .
 COPY . .
-COPY src/ .
-COPY src/ /src
+#COPY src/ .
+#COPY src/ /src
 EXPOSE 6072
 
 CMD ["npm", "run", "dev"]
