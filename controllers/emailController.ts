@@ -1,5 +1,39 @@
 import { Request, Response } from "express";
 import boss from "../config/pgBoss";
+// export const sendCustomEmail = async (req: Request, res: Response) => {
+//   const {
+//     email,
+//     title,
+//     schoolName,
+//     buttonLink,
+//     buttonText,
+//     EmailButton,
+//     description,
+//   } = req.body;
+
+//   if (!title || !email || !schoolName || !description) {
+//     return res.status(400).json({ message: "Please fill in all fields" });
+//   }
+
+//   try {
+//     await boss.send("sendCustomEmail", {
+//       email,
+//       title,
+//       schoolName,
+//       description,
+//       buttonLink,
+//       buttonText,
+//       EmailButton,
+//     });
+
+//     return res
+//       .status(200)
+//       .json({ message: "Email job enqueued successfully." });
+//   } catch (error) {
+//     console.error("Error enqueuing email job:", error);
+//     return res.status(500).json({ message: "Failed to enqueue email job." });
+//   }
+// };
 /**
  * @swagger
  * /api/send-custom-email:
@@ -75,41 +109,6 @@ import boss from "../config/pgBoss";
  *                   type: string
  *                   example: "Internal server error."
  */
-// export const sendCustomEmail = async (req: Request, res: Response) => {
-//   const {
-//     email,
-//     title,
-//     schoolName,
-//     buttonLink,
-//     buttonText,
-//     EmailButton,
-//     description,
-//   } = req.body;
-
-//   if (!title || !email || !schoolName || !description) {
-//     return res.status(400).json({ message: "Please fill in all fields" });
-//   }
-
-//   try {
-//     await boss.send("sendCustomEmail", {
-//       email,
-//       title,
-//       schoolName,
-//       description,
-//       buttonLink,
-//       buttonText,
-//       EmailButton,
-//     });
-
-//     return res
-//       .status(200)
-//       .json({ message: "Email job enqueued successfully." });
-//   } catch (error) {
-//     console.error("Error enqueuing email job:", error);
-//     return res.status(500).json({ message: "Failed to enqueue email job." });
-//   }
-// };
-
 export const sendCustomEmail = async (req: Request, res: Response) => {
   const {
     email,

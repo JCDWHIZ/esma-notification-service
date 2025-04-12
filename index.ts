@@ -5,7 +5,7 @@ import cors from "cors";
 const app: Application = express();
 import swaggerUi from "swagger-ui-express";
 import swaggerFile from "./swagger_output.json";
-const EmailRoutes = require("./routes/index");
+const Routes = require("./routes/index");
 import path from "path";
 import "./jobs/index";
 import { startEmailWorker } from "./jobs/emailsJobs";
@@ -19,7 +19,7 @@ app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
 app.use("/uploads", express.static(path.resolve(__dirname, "uploads")));
 
-app.use("/api/email", EmailRoutes);
+app.use("/api", Routes);
 app.get("/images/:filename", (req: Request, res: Response) => {
   const imagePath = path.resolve(__dirname, "uploads", req.params.filename);
 

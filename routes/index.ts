@@ -8,10 +8,10 @@ import {
   singleUpload,
 } from "../controllers/uploadController";
 
-router.route("/").post(sendCustomEmail);
-router.post("/single", upload.single("image"), singleUpload);
+router.route("/email").post(sendCustomEmail);
+router.post("/upload/single", upload.single("image"), singleUpload);
 
-router.post("/multiple", upload.array("files", 5), multipleUploads);
+router.post("/upload/multiple", upload.array("files", 5), multipleUploads);
 
 const multipleUpload = upload.fields([
   { name: "avatar", maxCount: 1 },
