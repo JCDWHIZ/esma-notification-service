@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node dist/index.js",
     "dev": "nodemon",
-    "swagger": "ts-node ./src/config/swagger.ts"
+    "swagger": "ts-node ./config/swagger.ts"
   },
   "keywords": [],
   "author": "",
