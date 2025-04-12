@@ -5,8 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node dist/index.js",
-    "dev": "nodemon",
-    "swagger": "ts-node ./config/swagger.ts"
+    "dev": "nodemon"
   },
   "keywords": [],
   "author": "",
@@ -15,23 +14,22 @@
     "@types/express": "^5.0.1",
     "@types/multer": "^1.4.12",
     "@types/nodemailer": "^6.4.17",
-    "bullmq": "^5.48.1",
+    "@types/swagger-ui-express": "^4.1.8",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
-    "ioredis": "^5.6.1",
     "multer": "^1.4.5-lts.2",
     "multer-storage-cloudinary": "^4.0.0",
     "nodemailer": "^6.10.0",
     "nodemon": "^3.1.9",
     "pg-boss": "^10.2.0",
-    "swagger-autogen": "^2.23.7",
+    "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.8.2"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
-    "@types/swagger-ui-express": "^4.1.8"
+    "@types/swagger-jsdoc": "^6.0.4"
   }
 }
