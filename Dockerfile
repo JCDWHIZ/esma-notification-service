@@ -21,9 +21,9 @@ WORKDIR /app
 
 # Copy the built files AND source files
 
-COPY --from=build /app .
+#COPY --from=build /app .
 COPY . .
-#COPY --from=build /app/src .
+COPY --from=build /app/src .
 #COPY --from=build /app/src /src
 #COPY . .
 # Ensure the src folder is copied correctly into /app/src
