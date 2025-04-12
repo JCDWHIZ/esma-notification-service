@@ -7,7 +7,7 @@ COPY package.json package-lock.json ./
 
 RUN npm i
 
-#COPY . .
+COPY . .
 #COPY src/ ./src/
 #COPY src/ ./src
 RUN npm run swagger
@@ -26,7 +26,7 @@ COPY . .
 #COPY --from=build /app/src .
 #COPY --from=build /app/src /src
 # Ensure the src folder is copied correctly into /app/src
-COPY --from=build /app/src /app/src
+#COPY --from=build /app/src /app/src
 #COPY src/ .
 #COPY src/ /src
 EXPOSE 6072
