@@ -1,5 +1,5 @@
 {
-  "watch": ["src"],
+  "watch": ["."],
   "ext": "ts",
-  "exec": "ts-node ./src/config/swagger.ts && ts-node-dev src/index.ts"
+  "exec": "ts-node ./config/swagger.ts && ts-node-dev index.ts"
 }
