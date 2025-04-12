@@ -11,16 +11,15 @@ import "./jobs/index";
 import { startEmailWorker } from "./jobs/emailsJobs";
 
 // connectDB();
-
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerFile));
+app.use("/shared/docs", swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
 app.use("/uploads", express.static(path.resolve(__dirname, "uploads")));
 
-app.use("/api", Routes);
-app.get("/images/:filename", (req: Request, res: Response) => {
+app.use("/shared/api", Routes);
+app.get("/shared/images/:filename", (req: Request, res: Response) => {
   const imagePath = path.resolve(__dirname, "uploads", req.params.filename);
 
   res.sendFile(imagePath, (err) => {
@@ -32,7 +31,7 @@ app.get("/images/:filename", (req: Request, res: Response) => {
 });
 
 // Example Route
-app.get("/api/test", (req, res) => {
+app.get("/shared/api/test", (req, res) => {
   /**
    * @swagger
    * /api/test:
