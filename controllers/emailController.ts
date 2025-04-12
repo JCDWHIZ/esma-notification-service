@@ -36,7 +36,7 @@ import boss from "../config/pgBoss";
 // };
 /**
  * @swagger
- * /api/send-custom-email:
+ * /api/email:
  *   post:
  *     summary: Send a custom email
  *     description: Sends a custom email with or without a button based on the provided parameters.

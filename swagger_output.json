@@ -47,7 +47,7 @@
         }
       }
     },
-    "/api/email/": {
+    "/api/email": {
       "post": {
         "description": "",
         "parameters": [
@@ -95,7 +95,7 @@
         }
       }
     },
-    "/api/email/single": {
+    "/api/upload/single": {
       "post": {
         "description": "",
         "responses": {
@@ -111,7 +111,7 @@
         }
       }
     },
-    "/api/email/multiple": {
+    "/api/upload/multiple": {
       "post": {
         "description": "",
         "responses": {
