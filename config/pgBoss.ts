@@ -5,7 +5,7 @@ const connectionString = process.env.DATABASE_URL;
 
 const boss = new PgBoss({
   connectionString,
-  schema: "public",
+  schema: "shared",
   application_name: "email-worker",
 });
 
