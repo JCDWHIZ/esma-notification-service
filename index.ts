@@ -7,7 +7,7 @@ import swaggerUi from "swagger-ui-express";
 import swaggerJsdoc from "swagger-jsdoc";
 const Routes = require("./routes/index");
 import path from "path";
-import "./jobs/index";
+import "./jobs/pulsar";
 import { startEmailWorker } from "./jobs/emailsJobs";
 
 const swaggerDefinition = {

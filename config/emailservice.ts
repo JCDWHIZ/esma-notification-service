@@ -104,7 +104,7 @@ export const EmailWithButton = (
   <body>
     <div class="container">
       <div class="header">
-        <img src="./companyLogo.jpg" alt="Elsoft Logo" title="Elsoft Logo" />
+        <img src="https://res.cloudinary.com/ddbtedc49/image/upload/v1744757032/u9dfemjtrn8t8018l9vi.jpg" alt="Elsoft Logo" title="Elsoft Logo" />
       </div>
       <div class="content">
         <h2 title="Title">${title}</h2>
@@ -183,7 +183,7 @@ export const EmailWithoutButton = (
   <body>
     <div class="container">
       <div class="header">
-        <img src="./companyLogo.jpg" alt="Elsoft Logo" title="Elsoft Logo" />
+        <img src="https://res.cloudinary.com/ddbtedc49/image/upload/v1744757032/u9dfemjtrn8t8018l9vi.jpg" alt="Elsoft Logo" title="Elsoft Logo" />
       </div>
       <div class="content">
         <h2 title="Title">${title}</h2>
