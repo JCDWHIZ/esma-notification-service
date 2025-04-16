@@ -337,8 +337,8 @@ async function processEmailAction(emailData: EmailAction): Promise<void> {
   if (
     !emailData.email ||
     !emailData.title ||
-    !emailData.description ||
-    !emailData.emailButton
+    !emailData.schoolName ||
+    !emailData.description
   ) {
     console.warn("Received incomplete email data, skipping processing");
     return;
