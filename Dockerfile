@@ -18,7 +18,7 @@ RUN apt-get update && apt-get install -y \
 
 # 2️⃣ Clone & build Pulsar C++ client (v2.10.2 as example; pin to your version)
 ARG PULSAR_VERSION=4.0.0
-RUN git clone --branch pulsar-${PULSAR_VERSION} --depth 1 \
+RUN git clone --branch pulsar-v${PULSAR_VERSION} --depth 1 \
       https://github.com/apache/pulsar.git /tmp/pulsar && \
     mkdir -p /tmp/pulsar/pulsar-client-cpp/build && \
     cd /tmp/pulsar/pulsar-client-cpp/build && \
