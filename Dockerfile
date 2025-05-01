@@ -5,7 +5,26 @@ WORKDIR /app
 
 COPY package.json package-lock.json ./
 
-RUN npm i
+RUN apt-get update && apt-get install -y \
+    apache-pulsar-client \
+    apache-pulsar-client-dev \
+    libssl-dev \
+    libcurl4-openssl-dev \
+    libboost-all-dev \  
+    libjsoncpp-dev \
+    libprotobuf-dev \
+    build-essential \
+    python3 \
+    pkg-config \
+    protobuf-compiler \
+    cmake \
+    curl \
+    && apt-get clean \
+    ldconfig \
+    && rm -rf /var/lib/apt/lists/*
+
+
+RUN npm install --build-from-source pulsar-client
 
 COPY . .
 #COPY src/ ./src/
@@ -17,18 +36,6 @@ RUN npx tsc
 FROM --platform=$TARGETPLATFORM node:20-bullseye AS runtime
 
 WORKDIR /app
-
-RUN apt-get update && apt-get install -y \
-    libssl-dev \
-    libcurl4-openssl-dev \
-    libboost-all-dev \
-    libjsoncpp-dev \
-    libprotobuf-dev \
-    protobuf-compiler \
-    cmake \
-    curl \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
 
 # Copy the built files AND source files
 
