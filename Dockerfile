@@ -1,22 +1,34 @@
 # Build stage
-FROM --platform=$BUILDPLATFORM node:20-bullseye AS build
+FROM node:20-bullseye AS build
 
 WORKDIR /app
 
-COPY package.json package-lock.json ./
+# Install Pulsar C++ client
+RUN apt-get update && \
+    apt-get install -y wget gnupg && \
+    wget -qO - https://downloads.apache.org/pulsar/KEYS | gpg --dearmor > /usr/share/keyrings/apache-pulsar.gpg && \
+    echo "deb [signed-by=/usr/share/keyrings/apache-pulsar.gpg] https://archive.apache.org/dist/pulsar/pulsar-client-cpp-3.4.2/deb-arm64/ /" > /etc/apt/sources.list.d/pulsar.list && \
+    apt-get update && \
+    apt-get install -y libpulsar-dev libpulsar-with-deps && \
+    rm -rf /var/lib/apt/lists/*
 
-RUN npm i
-
-COPY . .
-#COPY src/ ./src/
-#COPY src/ ./src
-
-RUN npx tsc
+# Rest of build steps...
 
 # Runtime stage
-FROM --platform=$TARGETPLATFORM node:20-bullseye AS runtime
+FROM node:20-bullseye AS runtime
 
 WORKDIR /app
+
+# Install runtime dependencies
+RUN apt-get update && \
+    apt-get install -y wget gnupg && \
+    wget -qO - https://downloads.apache.org/pulsar/KEYS | gpg --dearmor > /usr/share/keyrings/apache-pulsar.gpg && \
+    echo "deb [signed-by=/usr/share/keyrings/apache-pulsar.gpg] https://archive.apache.org/dist/pulsar/pulsar-client-cpp-3.4.2/deb-arm64/ /" > /etc/apt/sources.list.d/pulsar.list && \
+    apt-get update && \
+    apt-get install -y libpulsar && \
+    rm -rf /var/lib/apt/lists/*
+
+# Rest of runtime steps...
 
 # Copy the built files AND source files
 
