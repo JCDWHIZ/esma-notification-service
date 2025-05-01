@@ -1,37 +1,37 @@
-# Build stage (for installing dependencies and building native modules)
+# Build stage
 FROM --platform=$BUILDPLATFORM node:20-bullseye AS build
 
 WORKDIR /app
 
-# Install necessary tools for downloading files
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    cmake \
-    libboost-dev \
-    libssl-dev \
-    zlib1g-dev \
-    wget \
-    ca-certificates
+# 1. Install Pulsar C++ client dependencies
+RUN apt-get update && apt-get install -y wget libssl-dev
 
-# Download the C++ client installation script directly from GitHub
-RUN wget https://raw.githubusercontent.com/apache/pulsar-client-node/master/pkg/linux/download-cpp-client.sh -O /tmp/download-cpp-client.sh
+# 2. Download & Install Pulsar C++ client
+RUN wget -q https://archive.apache.org/dist/pulsar/pulsar-client-cpp-3.4.2/apache-pulsar-client-dev.deb \
+    && dpkg -i apache-pulsar-client-dev.deb
 
-RUN chmod +x /tmp/download-cpp-client.sh && /tmp/download-cpp-client.sh
+# 3. Install Node.js dependencies
+COPY package*.json ./
+RUN npm ci --omit=dev
 
-COPY package.json package-lock.json ./
-
-RUN npm i
-
+# 4. Copy source and build
 COPY . .
+RUN npx tsc
 
-# Runtime stage (for running the application directly with ts-node-dev)
+# Runtime stage
 FROM --platform=$TARGETPLATFORM node:20-bullseye AS runtime
 
 WORKDIR /app
 
-# Copy the entire application (including source files and node_modules)
+# 1. Install Pulsar C++ client dependencies
+RUN apt-get update && apt-get install -y wget libssl-dev
+
+# 2. Install Pulsar C++ client (MUST match build stage version)
+RUN wget -q https://archive.apache.org/dist/pulsar/pulsar-client-cpp-3.4.2/apache-pulsar-client-dev.deb \
+    && dpkg -i apache-pulsar-client-dev.deb
+
+# 3. Copy ONLY build artifacts from build stage
 COPY --from=build /app .
 
 EXPOSE 6072
-
 CMD ["npm", "run", "dev"]
