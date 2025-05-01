@@ -3,16 +3,19 @@ FROM --platform=$BUILDPLATFORM node:20-bullseye AS build
 
 WORKDIR /app
 
-# Install necessary build tools and dependencies for compiling the C++ client
+# Install necessary tools for downloading files
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     cmake \
     libboost-dev \
     libssl-dev \
-    zlib1g-dev
+    zlib1g-dev \
+    wget \
+    ca-certificates
 
-# Download and execute the script to install the Pulsar C++ client
-COPY --from=apache/pulsar-client-node:latest /pkg/linux/download-cpp-client.sh /tmp/download-cpp-client.sh
+# Download the C++ client installation script directly from GitHub
+RUN wget https://raw.githubusercontent.com/apache/pulsar-client-node/master/pkg/linux/download-cpp-client.sh -O /tmp/download-cpp-client.sh
+
 RUN chmod +x /tmp/download-cpp-client.sh && /tmp/download-cpp-client.sh
 
 COPY package.json package-lock.json ./
