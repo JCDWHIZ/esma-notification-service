@@ -1,35 +1,39 @@
-# Build stage
-FROM --platform=$BUILDPLATFORM node:20-bullseye AS build
-
+# ─── BUILD STAGE ───────────────────────────────────────────────────────────────
+FROM node:20-bullseye AS build
 WORKDIR /app
 
-COPY package.json package-lock.json ./
-
+# 1️⃣ Install core build deps
 RUN apt-get update && apt-get install -y \
-    apache-pulsar-client \
-    apache-pulsar-client-dev \
+    build-essential \
+    cmake \
+    pkg-config \
+    git \
     libssl-dev \
     libcurl4-openssl-dev \
-    libboost-all-dev \  
-    libjsoncpp-dev \
     libprotobuf-dev \
-    build-essential \
-    python3 \
-    pkg-config \
     protobuf-compiler \
-    cmake \
-    curl \
-    && apt-get clean \
-    ldconfig \
-    && rm -rf /var/lib/apt/lists/*
+    libboost-all-dev \
+    python3 \
+  && rm -rf /var/lib/apt/lists/*
 
+# 2️⃣ Clone & build Pulsar C++ client (v2.10.2 as example; pin to your version)
+ARG PULSAR_VERSION=2.10.2
+RUN git clone --branch pulsar-${PULSAR_VERSION} --depth 1 \
+      https://github.com/apache/pulsar.git /tmp/pulsar && \
+    mkdir -p /tmp/pulsar/pulsar-client-cpp/build && \
+    cd /tmp/pulsar/pulsar-client-cpp/build && \
+    cmake -DCMAKE_INSTALL_PREFIX=/usr/local .. && \
+    make -j$(nproc) install && \
+    ldconfig && \
+    rm -rf /tmp/pulsar
 
+# 3️⃣ Copy package files & install Node binding
+COPY package*.json ./
+# Force build from source to bind against our freshly-installed C++ client
 RUN npm install --build-from-source pulsar-client
 
+# 4️⃣ Copy app code & transpile (if TS)
 COPY . .
-#COPY src/ ./src/
-#COPY src/ ./src
-
 RUN npx tsc
 
 # Runtime stage
