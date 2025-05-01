@@ -1,21 +1,6 @@
 # Build stage
 FROM --platform=$BUILDPLATFORM node:20-bullseye AS build
 
-
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-      build-essential \
-      python3 \
-      pkg-config \
-      libpulsar-dev && \
-    rm -rf /var/lib/apt/lists/*
-
-
-RUN apt-get update && \
-apt-get install -y --no-install-recommends \
-    libpulsar1 && \
-rm -rf /var/lib/apt/lists/*
-
 WORKDIR /app
 
 COPY package.json package-lock.json ./
@@ -33,6 +18,18 @@ FROM --platform=$TARGETPLATFORM node:20-bullseye AS runtime
 
 WORKDIR /app
 
+RUN apt-get update && apt-get install -y \
+    libssl-dev \
+    libcurl4-openssl-dev \
+    libboost-all-dev \
+    libjsoncpp-dev \
+    libprotobuf-dev \
+    protobuf-compiler \
+    cmake \
+    curl \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
 # Copy the built files AND source files
 
 COPY --from=build /app .
@@ -44,6 +41,7 @@ COPY . .
 #COPY --from=build /app/src /app/src
 #COPY src/ .
 #COPY src/ /src
+RUN chmod -R 755 /app
 EXPOSE 6072
 
 CMD ["npm", "run", "dev"]
