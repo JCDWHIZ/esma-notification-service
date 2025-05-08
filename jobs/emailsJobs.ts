@@ -60,7 +60,7 @@ interface EmailJobData {
   description: string;
   buttonLink: string;
   buttonText: string;
-  EmailButton: boolean;
+  emailButton: boolean;
 }
 
 // export const createEmailWorker = (boss: PgBoss) => {
@@ -116,17 +116,22 @@ export const startEmailWorker = async () => {
         description,
         buttonLink,
         buttonText,
-        EmailButton,
+        emailButton,
       } = job.data as EmailJobData;
-      const html = EmailButton
-        ? EmailWithButton(
-            title,
-            schoolName,
-            buttonLink,
-            description,
-            buttonText
-          )
-        : EmailWithoutButton(title, schoolName, description);
+      console.log("Processing job:", job.id, job.data);
+      console.log("EmailButton:", job.data);
+      const jobData = job.data as EmailJobData;
+      console.log("EmailButton:", jobData.emailButton);
+      const html =
+        emailButton === true
+          ? EmailWithButton(
+              title,
+              schoolName,
+              buttonLink,
+              description,
+              buttonText
+            )
+          : EmailWithoutButton(title, schoolName, description);
 
       await sendEmail(email, title, html);
     });
