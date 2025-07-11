@@ -7,8 +7,6 @@ variables:
   IMAGE_NAME: esma-shared
   DOCKER_IMAGE: "$DOCKER_REGISTRY/$DOCKER_USERNAME/$IMAGE_NAME:latest"
   DOCKER_TLS_CERTDIR: ""
-  DOCKER_HOST: tcp://docker:2375
-  NODE_VERSION: "18"  # Specify Node.js version
 
 services:
   - docker:24.0.5-dind
@@ -16,6 +14,8 @@ services:
 build-and-push:
   stage: build
   image: docker:24.0.5
+  services:
+  - docker:24.0.5-dind
   tags:
     - esma
   before_script:
