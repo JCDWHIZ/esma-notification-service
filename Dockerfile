@@ -31,4 +31,4 @@ COPY . .
 #COPY src/ /src
 EXPOSE 6072
 
-CMD ["npm", "run", "dev"]
+CMD ["npm", "start"]
