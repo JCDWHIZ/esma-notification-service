@@ -9,7 +9,6 @@ variables:
   DOCKER_TLS_CERTDIR: ""
   DOCKER_HOST: tcp://docker:2376
   DOCKER_DRIVER: overlay2
-  NODE_VERSION: "20"  # Updated to Node 20 for pg-boss compatibility
 
 services:
   - name: docker:24.0.5-dind
@@ -18,21 +17,19 @@ services:
 
 build-and-push:
   stage: build
-  image: docker:24.0.5
+  image: node:20-alpine
   tags:
     - esma
   before_script:
-    # Install Node.js 20 for TypeScript compilation and pg-boss compatibility
-    - apk add --no-cache curl
-    # Install Node.js 20 from official NodeJS Alpine repository
-    - apk add --no-cache nodejs=~20 npm
+    # Install Docker CLI
+    - apk add --no-cache docker-cli curl
     - node --version
     - npm --version
     # Wait for docker service to be ready
-    - sleep 10
+    - sleep 15
     - docker info
     # Install dependencies
-    - npm ci  # Use npm ci for faster, reliable installs
+    - npm ci
     # Login to Docker registry
     - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin $DOCKER_REGISTRY
   script:
@@ -50,7 +47,6 @@ build-and-push:
   only:
     - main
     - dev
-  # Add cache for node_modules
   cache:
     key: 
       files:
