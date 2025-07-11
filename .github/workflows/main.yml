@@ -7,31 +7,40 @@ variables:
   IMAGE_NAME: esma-shared
   DOCKER_IMAGE: "$DOCKER_REGISTRY/$DOCKER_USERNAME/$IMAGE_NAME:latest"
   DOCKER_TLS_CERTDIR: ""
+  DOCKER_HOST: tcp://docker:2376
+  DOCKER_DRIVER: overlay2
+  NODE_VERSION: "20"  # Updated to Node 20 for pg-boss compatibility
 
 services:
-  - docker:24.0.5-dind
+  - name: docker:24.0.5-dind
+    alias: docker
+    command: ["--tls=false", "--host=tcp://0.0.0.0:2376"]
 
 build-and-push:
   stage: build
   image: docker:24.0.5
-  services:
-  - docker:24.0.5-dind
   tags:
     - esma
   before_script:
-    # Install Node.js for TypeScript compilation
-    - apk add --no-cache curl npm nodejs
+    # Install Node.js 20 for TypeScript compilation and pg-boss compatibility
+    - apk add --no-cache curl
+    # Install Node.js 20 from official NodeJS Alpine repository
+    - apk add --no-cache nodejs=~20 npm
     - node --version
     - npm --version
+    # Wait for docker service to be ready
+    - sleep 10
+    - docker info
     # Install dependencies
     - npm ci  # Use npm ci for faster, reliable installs
     # Login to Docker registry
-    - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD" $DOCKER_REGISTRY
+    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin $DOCKER_REGISTRY
   script:
     - echo "🔨 Building Docker image..."
     # Create buildx builder if it doesn't exist
     - docker buildx create --use --name mybuilder || docker buildx use mybuilder
-    - docker buildx build \
+    - |
+      docker buildx build \
         --platform linux/arm64 \
         --push \
         --tag "$DOCKER_REGISTRY/$DOCKER_USERNAME/$IMAGE_NAME:latest" \
