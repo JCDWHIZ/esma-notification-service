@@ -7,7 +7,7 @@
     "start": "node dist/index.js",
     "dev": "nodemon",
     "test_pulsar": "ts-node-dev jobs/pulsar_test.ts",
-    "test_kafka": "ts-node-dev jobs/kafka/kafka_producer.ts"
+    "test_kafka": "ts-node-dev jobs/kafka/kafka_test.ts"
   },
   "keywords": [],
   "author": "",
@@ -32,7 +32,7 @@
     "typescript": "^5.8.2"
   },
   "devDependencies": {
-    "@types/cors": "^2.8.17",
+    "@types/cors": "^2.8.19",
     "@types/swagger-jsdoc": "^6.0.4"
   }
 }
