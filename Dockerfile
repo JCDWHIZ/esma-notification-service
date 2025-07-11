@@ -1,34 +1,21 @@
-# Build stage
-FROM --platform=$BUILDPLATFORM node:20-bullseye AS build
+FROM node:18-alpine
 
 WORKDIR /app
 
-COPY package.json package-lock.json ./
+# Copy package files
+COPY package*.json ./
 
-RUN npm i
+# Install dependencies
+RUN npm ci --only=production
 
+# Copy source code
 COPY . .
-#COPY src/ ./src/
-#COPY src/ ./src
 
-RUN npx tsc
+# Build TypeScript
+RUN npm run build
 
-# Runtime stage
-FROM --platform=$TARGETPLATFORM node:20-bullseye AS runtime
+# Expose port
+EXPOSE 3000
 
-WORKDIR /app
-
-# Copy the built files AND source files
-
-COPY --from=build /app .
-COPY . .
-#COPY --from=build /app/src .
-#COPY --from=build /app/src /src
-COPY . .
-# Ensure the src folder is copied correctly into /app/src
-#COPY --from=build /app/src /app/src
-#COPY src/ .
-#COPY src/ /src
-EXPOSE 6072
-
+# Start the application
 CMD ["npm", "start"]
