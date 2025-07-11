@@ -198,216 +198,216 @@
 //   process.exit(1);
 // });
 
-import * as Pulsar from "pulsar-client";
-import * as dotenv from "dotenv";
-import boss from "../config/pgBoss";
+// import * as Pulsar from "pulsar-client";
+// import * as dotenv from "dotenv";
+// import boss from "../config/pgBoss";
 
-// Load environment variables
-dotenv.config();
+// // Load environment variables
+// dotenv.config();
 
-// Define interfaces for your message types
-interface EmailAction {
-  email: string;
-  title: string;
-  schoolName: string;
-  buttonLink?: string;
-  buttonText?: string;
-  emailButton: boolean;
-  description?: string;
-}
+// // Define interfaces for your message types
 // interface EmailAction {
-//   to: string;
-//   subject: string;
-//   body: string;
-//   attachments?: string[];
+//   email: string;
+//   title: string;
+//   schoolName: string;
+//   buttonLink?: string;
+//   buttonText?: string;
+//   emailButton: boolean;
+//   description?: string;
+// }
+// // interface EmailAction {
+// //   to: string;
+// //   subject: string;
+// //   body: string;
+// //   attachments?: string[];
+// // }
+
+// interface PulsarMessage {
+//   messageType: string;
+//   data: EmailAction | any;
 // }
 
-interface PulsarMessage {
-  messageType: string;
-  data: EmailAction | any;
-}
+// async function main() {
+//   // Validate required environment variables
+//   const serviceUrl = process.env.PULSAR;
+//   if (!serviceUrl) {
+//     throw new Error("PULSAR environment variable is not defined");
+//   }
 
-async function main() {
-  // Validate required environment variables
-  const serviceUrl = process.env.PULSAR;
-  if (!serviceUrl) {
-    throw new Error("PULSAR environment variable is not defined");
-  }
+//   console.log(`Connecting to Pulsar at ${serviceUrl}...`);
 
-  console.log(`Connecting to Pulsar at ${serviceUrl}...`);
+//   const client = new Pulsar.Client({
+//     serviceUrl,
+//     operationTimeoutSeconds: 30,
+//   });
 
-  const client = new Pulsar.Client({
-    serviceUrl,
-    operationTimeoutSeconds: 30,
-  });
+//   const topic = "persistent://public/default/email-actions";
+//   const subscription = "email-processor";
 
-  const topic = "persistent://public/default/email-actions";
-  const subscription = "email-processor";
+//   console.log(`Subscribing to topic: ${topic}`);
 
-  console.log(`Subscribing to topic: ${topic}`);
+//   const consumer = await client.subscribe({
+//     topic,
+//     subscription,
+//     subscriptionType: "Shared",
+//     // Enable negative acknowledgment for message recovery
+//     nAckRedeliverTimeoutMs: 60000,
+//     // Set a larger receive queue size to get more messages at once
+//     receiverQueueSize: 100,
+//   });
 
-  const consumer = await client.subscribe({
-    topic,
-    subscription,
-    subscriptionType: "Shared",
-    // Enable negative acknowledgment for message recovery
-    nAckRedeliverTimeoutMs: 60000,
-    // Set a larger receive queue size to get more messages at once
-    receiverQueueSize: 100,
-  });
+//   console.log("Node.js Pulsar consumer started and waiting for messages...");
 
-  console.log("Node.js Pulsar consumer started and waiting for messages...");
+//   // Setup graceful shutdown
+//   setupGracefulShutdown(client, consumer);
 
-  // Setup graceful shutdown
-  setupGracefulShutdown(client, consumer);
+//   // Message processing loop
+//   while (true) {
+//     try {
+//       const msg = await consumer.receive();
+//       const rawData = msg.getData().toString();
 
-  // Message processing loop
-  while (true) {
-    try {
-      const msg = await consumer.receive();
-      const rawData = msg.getData().toString();
+//       console.log("DEBUG - Received raw message:", rawData);
 
-      console.log("DEBUG - Received raw message:", rawData);
+//       try {
+//         // Try to parse as JSON
+//         let messagePayload: PulsarMessage;
+//         try {
+//           messagePayload = JSON.parse(rawData);
 
-      try {
-        // Try to parse as JSON
-        let messagePayload: PulsarMessage;
-        try {
-          messagePayload = JSON.parse(rawData);
+//           // Check if the result is a string (double-encoded JSON)
+//           if (typeof messagePayload === "string") {
+//             messagePayload = JSON.parse(messagePayload);
+//           }
 
-          // Check if the result is a string (double-encoded JSON)
-          if (typeof messagePayload === "string") {
-            messagePayload = JSON.parse(messagePayload);
-          }
+//           console.log(
+//             "Parsed message:",
+//             JSON.stringify(messagePayload, null, 2)
+//           );
 
-          console.log(
-            "Parsed message:",
-            JSON.stringify(messagePayload, null, 2)
-          );
+//           // Check if this is a complete message with required fields
+//           if (!messagePayload.messageType) {
+//             console.warn(
+//               "Received incomplete message (no messageType), acknowledging and continuing"
+//             );
+//             await consumer.acknowledge(msg);
+//             continue;
+//           }
 
-          // Check if this is a complete message with required fields
-          if (!messagePayload.messageType) {
-            console.warn(
-              "Received incomplete message (no messageType), acknowledging and continuing"
-            );
-            await consumer.acknowledge(msg);
-            continue;
-          }
+//           // Process based on message type
+//           if (
+//             messagePayload.messageType === "SendEmail" &&
+//             messagePayload.data
+//           ) {
+//             // Cast to expected type for better type safety
+//             const emailData = messagePayload.data as EmailAction;
+//             await processEmailAction(emailData);
+//           } else {
+//             console.log(
+//               `Received message with type: ${messagePayload.messageType}`
+//             );
+//           }
 
-          // Process based on message type
-          if (
-            messagePayload.messageType === "SendEmail" &&
-            messagePayload.data
-          ) {
-            // Cast to expected type for better type safety
-            const emailData = messagePayload.data as EmailAction;
-            await processEmailAction(emailData);
-          } else {
-            console.log(
-              `Received message with type: ${messagePayload.messageType}`
-            );
-          }
+//           // Acknowledge successful processing
+//           await consumer.acknowledge(msg);
+//         } catch (parseError) {
+//           // If parsing fails, this could be a fragmented message
+//           console.warn(
+//             "Failed to parse as JSON, likely a message fragment. Acknowledging fragment."
+//           );
+//           console.error("Parse error:", parseError);
 
-          // Acknowledge successful processing
-          await consumer.acknowledge(msg);
-        } catch (parseError) {
-          // If parsing fails, this could be a fragmented message
-          console.warn(
-            "Failed to parse as JSON, likely a message fragment. Acknowledging fragment."
-          );
-          console.error("Parse error:", parseError);
+//           // For fragmented messages, just acknowledge them
+//           await consumer.acknowledge(msg);
+//         }
+//       } catch (error) {
+//         console.error("Error processing message:", error);
+//         await consumer.negativeAcknowledge(msg);
+//       }
+//     } catch (processingError) {
+//       console.error("Error in receive loop:", processingError);
+//       // Add a small delay before continuing to avoid tight loops in case of errors
+//       await new Promise((resolve) => setTimeout(resolve, 1000));
+//     }
+//   }
+// }
 
-          // For fragmented messages, just acknowledge them
-          await consumer.acknowledge(msg);
-        }
-      } catch (error) {
-        console.error("Error processing message:", error);
-        await consumer.negativeAcknowledge(msg);
-      }
-    } catch (processingError) {
-      console.error("Error in receive loop:", processingError);
-      // Add a small delay before continuing to avoid tight loops in case of errors
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-    }
-  }
-}
+// async function processEmailAction(emailData: EmailAction): Promise<void> {
+//   // Validate required fields
+//   if (
+//     !emailData.email ||
+//     !emailData.title ||
+//     !emailData.schoolName ||
+//     !emailData.description
+//   ) {
+//     console.warn("Received incomplete email data, skipping processing");
+//     return;
+//   }
 
-async function processEmailAction(emailData: EmailAction): Promise<void> {
-  // Validate required fields
-  if (
-    !emailData.email ||
-    !emailData.title ||
-    !emailData.schoolName ||
-    !emailData.description
-  ) {
-    console.warn("Received incomplete email data, skipping processing");
-    return;
-  }
+//   console.log("Processing email action:");
+//   console.log(`  To: ${emailData.email}`);
+//   console.log(`  Subject: ${emailData.title}`);
+//   console.log(
+//     `  Body length: ${emailData.description?.length || 0} characters`
+//   );
 
-  console.log("Processing email action:");
-  console.log(`  To: ${emailData.email}`);
-  console.log(`  Subject: ${emailData.title}`);
-  console.log(
-    `  Body length: ${emailData.description?.length || 0} characters`
-  );
+//   // Implement your email sending logic here
+//   // Example:
+//   // await emailService.sendEmail(emailData.to, emailData.subject, emailData.body, emailData.attachments);
+//   const queueName = "email-queue";
 
-  // Implement your email sending logic here
-  // Example:
-  // await emailService.sendEmail(emailData.to, emailData.subject, emailData.body, emailData.attachments);
-  const queueName = "email-queue";
+//   try {
+//     // First, ensure the queue exists
+//     await boss.createQueue(queueName);
 
-  try {
-    // First, ensure the queue exists
-    await boss.createQueue(queueName);
+//     // Then send the job to the queue
+//     const jobId = await boss.send(queueName, {
+//       email: emailData.email,
+//       title: emailData.title,
+//       schoolName: emailData.schoolName,
+//       description: emailData.description,
+//       buttonLink: emailData.buttonLink,
+//       buttonText: emailData.buttonText,
+//       emailButton: emailData.emailButton,
+//     });
 
-    // Then send the job to the queue
-    const jobId = await boss.send(queueName, {
-      email: emailData.email,
-      title: emailData.title,
-      schoolName: emailData.schoolName,
-      description: emailData.description,
-      buttonLink: emailData.buttonLink,
-      buttonText: emailData.buttonText,
-      emailButton: emailData.emailButton,
-    });
+//     console.log(`Created job ${jobId} in queue ${queueName}`);
+//     console.log({ message: "Email job enqueued successfully.", jobId });
+//   } catch (error) {
+//     console.error("Error enqueuing email job:", error);
+//     return console.log({ message: "Failed to enqueue email job." });
+//   }
+//   console.log("Email processed successfully");
+// }
+// function setupGracefulShutdown(
+//   client: Pulsar.Client,
+//   consumer: Pulsar.Consumer
+// ): void {
+//   const shutdown = async () => {
+//     console.log("Shutting down gracefully...");
+//     try {
+//       await consumer.close();
+//       console.log("Consumer closed");
+//       await client.close();
+//       console.log("Client closed");
+//       process.exit(0);
+//     } catch (err) {
+//       console.error("Error during shutdown:", err);
+//       process.exit(1);
+//     }
+//   };
 
-    console.log(`Created job ${jobId} in queue ${queueName}`);
-    console.log({ message: "Email job enqueued successfully.", jobId });
-  } catch (error) {
-    console.error("Error enqueuing email job:", error);
-    return console.log({ message: "Failed to enqueue email job." });
-  }
-  console.log("Email processed successfully");
-}
-function setupGracefulShutdown(
-  client: Pulsar.Client,
-  consumer: Pulsar.Consumer
-): void {
-  const shutdown = async () => {
-    console.log("Shutting down gracefully...");
-    try {
-      await consumer.close();
-      console.log("Consumer closed");
-      await client.close();
-      console.log("Client closed");
-      process.exit(0);
-    } catch (err) {
-      console.error("Error during shutdown:", err);
-      process.exit(1);
-    }
-  };
+//   // Handle termination signals
+//   process.on("SIGINT", shutdown);
+//   process.on("SIGTERM", shutdown);
+//   process.on("uncaughtException", (err) => {
+//     console.error("Uncaught exception:", err);
+//     shutdown();
+//   });
+// }
 
-  // Handle termination signals
-  process.on("SIGINT", shutdown);
-  process.on("SIGTERM", shutdown);
-  process.on("uncaughtException", (err) => {
-    console.error("Uncaught exception:", err);
-    shutdown();
-  });
-}
-
-// Start the application
-main().catch((err) => {
-  console.error("Fatal error running Pulsar client:", err);
-  process.exit(1);
-});
+// // Start the application
+// main().catch((err) => {
+//   console.error("Fatal error running Pulsar client:", err);
+//   process.exit(1);
+// });

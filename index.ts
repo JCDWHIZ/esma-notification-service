@@ -8,6 +8,7 @@ import swaggerJsdoc from "swagger-jsdoc";
 const Routes = require("./routes/index");
 import path from "path";
 import "./jobs/pulsar";
+import "./jobs/kafka/kafka";
 import { startEmailWorker } from "./jobs/emailsJobs";
 
 const swaggerDefinition = {
