@@ -15,8 +15,8 @@ build-and-push:
   tags:
   - esma
   variables:
-    DOCKER_HOST: tcp://docker:2375
-    DOCKER_TLS_CERTDIR: ""
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: "/certs"
   before_script:
     # Install dependencies
     - apk add --no-cache nodejs npm curl git
