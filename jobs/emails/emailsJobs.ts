@@ -45,12 +45,12 @@
 //     }
 //   }
 // });
-import boss from "../config/pgBoss";
+import boss from "../../config/pgBoss";
 import {
   sendEmail,
   EmailWithButton,
   EmailWithoutButton,
-} from "../config/emailservice";
+} from "../../config/emailservice";
 import PgBoss from "pg-boss";
 
 interface EmailJobData {
