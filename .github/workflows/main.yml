@@ -4,7 +4,7 @@ stages:
 
 variables:
   DOCKER_REGISTRY: "docker.io"
-  IMAGE_NAME: "esma-shared"
+  IMAGE_NAME: "esma-notification-service"
   DOCKER_IMAGE: ${DOCKER_USERNAME}/${IMAGE_NAME}:latest
 
 build-and-push:
