@@ -9,7 +9,7 @@ dotenv.config();
 interface EmailAction {
   email: string;
   title: string;
-  schoolName: string;
+  name: string;
   buttonLink?: string;
   buttonText?: string;
   emailButton: boolean;
@@ -150,7 +150,7 @@ class EmailConsumerService {
     if (
       !emailData.email ||
       !emailData.title ||
-      !emailData.schoolName ||
+      !emailData.name ||
       !emailData.description
     ) {
       console.warn("Received incomplete email data, skipping processing");
@@ -174,7 +174,7 @@ class EmailConsumerService {
       const jobId = await boss.send(queueName, {
         email: emailData.email,
         title: emailData.title,
-        schoolName: emailData.schoolName,
+        schoolName: emailData.name,
         description: emailData.description,
         buttonLink: emailData.buttonLink,
         buttonText: emailData.buttonText,
