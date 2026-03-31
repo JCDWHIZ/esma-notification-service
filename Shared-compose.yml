@@ -9,11 +9,11 @@ services:
       - PORT=6072
       - DATABASE_URL=${DATABASE_URL}
       - NODE_ENV=production
-      - CLOUDINARY_API_SECRET=8lH7epf3A6amhrOh5DPlywJM7w4
-      - CLOUDINARY_API_KEY=495564918312834
-      - CLOUDINARY_CLOUD_NAME=ddbtedc49
+      - CLOUDINARY_API_SECRET=test
+      - CLOUDINARY_API_KEY=test
+      - CLOUDINARY_CLOUD_NAME=test
       - EMAIL_USER=elsofthub@gmail.com
-      - EMAIL_PASSWORD=elwz vkiy lcoe iusd
+      - EMAIL_PASSWORD=test
       - FRONTEND_URL=https://localhost:5000
     volumes:
       - ./src:/app/src
